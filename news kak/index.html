@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Interactive Background Experience</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        accent: 'var(--accent-color)',
+                        'accent-hover': 'var(--accent-hover-color)',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --accent-color: #6366f1;
+            --accent-hover-color: #4f46e5;
+            --accent-glow: rgba(99, 102, 241, 0.35);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            background-color: #090d16;
+            color: #f3f4f6;
+        }
+
+        /* Canvas Fullscreen */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(17, 24, 39, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-pill:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #ffffff;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        /* Glow Text Effect */
+        .glow-text {
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* Custom Buttons Accent styling */
+        .btn-accent {
+            background-color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-hover-color);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .border-accent {
+            border-color: var(--accent-color);
+        }
+
+        /* Color Swatches styling */
+        .color-dot {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .color-dot:hover {
+            transform: scale(1.25);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center py-10 px-4 sm:px-6 relative selection:bg-indigo-500 selection:text-white">
+
+    <!-- Interactive Background Canvas -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Top Left Control Panel (Theme & Mode Toggles) -->
+    <div class="fixed top-4 left-4 sm:top-6 sm:left-6 z-50 flex flex-wrap gap-2">
+        <button id="configToggleBtn" class="glass-pill text-white px-4 py-2.5 rounded-full flex items-center gap-2 text-sm font-medium transition duration-300 shadow-lg hover:scale-105 active:scale-95">
+            <i class="fa-solid fa-sliders text-indigo-400"></i>
+            <span>Kostumisasi Background</span>
+        </button>
+    </div>
+
+    <!-- Main Container Card -->
+    <main class="relative z-10 w-full max-w-4xl glass-card rounded-3xl p-6 sm:p-10 transition-all duration-500 my-auto">
+        
+        <!-- Header / Hero Section -->
+        <div class="flex flex-col md:flex-row items-center gap-8 border-b border-gray-800 pb-8">
+            <!-- Profile Avatar with Animated Glow Ring -->
+            <div class="relative group">
+                <div class="absolute -inset-1 rounded-full blur-md opacity-75 group-hover:opacity-100 transition duration-500 animate-pulse-slow" style="background: linear-gradient(45deg, var(--accent-color), #ec4899, #3b82f6);"></div>
+                <div class="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-white/20 p-1 bg-gray-900 shadow-2xl">
+                    <img src="kntl.jpeg" 
+                         alt="Foto Profil" 
+                         class="w-full h-full object-cover rounded-full group-hover:scale-105 transition duration-500"
+                         onerror="this.src='https://placehold.co/400x400/1e293b/ffffff?text=User+Avatar'">
+                </div>
+                <div class="absolute bottom-2 right-2 bg-emerald-500 w-5 h-5 rounded-full border-2 border-gray-900 shadow-md" title="Status: Online & Ready for Hire"></div>
+            </div>
+
+            <!-- Profile Info Header -->
+            <div class="flex-1 text-center md:text-left space-y-3">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white glow-text">
+                        Agistya Djoe.
+                    </h1>
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        Mahasiswa Teknik Rekayasa Perangkat Lunak
+                    </span>
+                </div>
+                <p class="text-gray-400 text-sm sm:text-base leading-relaxed max-w-xl">
+                    Menciptakan dan Mengembangkan inovasi-inovasi tentang software dan pemrograman.
+                </p>
+                
+                <!-- Social Media Badges -->
+                <div class="flex items-center justify-center md:justify-start gap-3 pt-2">
+                    <a href="#" class="w-10 h-10 rounded-full glass-pill flex items-center justify-center text-gray-300 hover:text-white transition duration-300">
+                        <i class="fa-brands fa-github text-lg"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full glass-pill flex items-center justify-center text-gray-300 hover:text-white transition duration-300">
+                        <i class="fa-brands fa-linkedin-in text-lg"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full glass-pill flex items-center justify-center text-gray-300 hover:text-white transition duration-300">
+                        <i class="fa-brands fa-x-twitter text-lg"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full glass-pill flex items-center justify-center text-gray-300 hover:text-white transition duration-300">
+                        <i class="fa-brands fa-instagram text-lg"></i>
+                    </a>
+                    <a href="#contact" class="btn-accent px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-white flex items-center gap-2 ml-auto sm:ml-2">
+                        <i class="fa-regular fa-paper-plane"></i> Kontak Saya
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 my-8">
+            <div class="glass-pill p-4 rounded-2xl text-center">
+                <span class="block text-2xl font-bold text-white mb-1">1</span>
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Tahun Pengalaman</span>
+            </div>
+            <div class="glass-pill p-4 rounded-2xl text-center">
+                <span class="block text-2xl font-bold text-white mb-1">500</span>
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Projek Selesai</span>
+            </div>
+            <div class="glass-pill p-4 rounded-2xl text-center">
+                <span class="block text-2xl font-bold text-white mb-1">499</span>
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Klien Puas</span>
+            </div>
+            <div class="glass-pill p-4 rounded-2xl text-center">
+                <span class="block text-2xl font-bold text-white mb-1">99.9%</span>
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Uptime Kode</span>
+            </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="space-y-4 mb-8">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-code text-indigo-400"></i> Keahlian & Teknologi
+            </h2>
+            <div class="flex flex-wrap gap-2.5">
+                <span class="glass-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <i class="fa-brands fa-react text-cyan-400"></i> React / Next.js
+                </span>
+                <span class="glass-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <i class="fa-brands fa-js text-yellow-400"></i> JavaScript (ES6+)
+                </span>
+                <span class="glass-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <i class="fa-brands fa-html5 text-orange-500"></i> HTML5 & CSS3
+                </span>
+                <span class="glass-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <i class="fa-brands fa-node-js text-emerald-500"></i> Node.js
+                </span>
+                <span class="glass-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <i class="fa-solid fa-wind text-sky-400"></i> Tailwind CSS
+                </span>
+                <span class="glass-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-purple-400"></i> Three.js / WebGL
+                </span>
+                <span class="glass-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <i class="fa-brands fa-figma text-pink-400"></i> Figma UI/UX
+                </span>
+            </div>
+        </div>
+
+        <!-- Portfolio Showcase Cards -->
+        <div class="space-y-4 mb-8">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-indigo-400"></i> Portofolio Unggulan
+                </h2>
+                <a href="#" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Lihat Semua <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Project 1 -->
+                <div class="group relative rounded-2xl overflow-hidden glass-pill border border-gray-800 hover:border-gray-700 transition duration-300 flex flex-col justify-between">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300">Web App</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-gray-500 group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white group-hover:text-indigo-400 transition mb-2">Nebula AI Analytics Dashboard</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                            Platform analisis data waktu-nyata berbasis kecerdasan buatan dengan grafik interaktif dan prediksi otomatis.
+                        </p>
+                    </div>
+                    <div class="bg-black/30 px-5 py-3 border-t border-gray-800/50 flex items-center gap-3 text-xs text-gray-400">
+                        <span>React</span> • <span>Tailwind</span> • <span>Chart.js</span>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="group relative rounded-2xl overflow-hidden glass-pill border border-gray-800 hover:border-gray-700 transition duration-300 flex flex-col justify-between">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-300">3D Interactive</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-gray-500 group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white group-hover:text-indigo-400 transition mb-2">Cyberpunk Metaverse Showcase</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                            Pengalaman visual WebGL 3D interaktif yang menampilkan arsitektur futuristik di peramban tanpa hambatan.
+                        </p>
+                    </div>
+                    <div class="bg-black/30 px-5 py-3 border-t border-gray-800/50 flex items-center gap-3 text-xs text-gray-400">
+                        <span>Three.js</span> • <span>WebGL</span> • <span>GSAP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Contact Form / Quick Message -->
+        <div id="contact" class="p-6 rounded-2xl bg-black/40 border border-gray-800">
+            <h3 class="text-lg font-bold text-white mb-2">Kirim Pesan Cepat</h3>
+            <p class="text-xs text-gray-400 mb-4">Tertarik berkolaborasi? Tinggalkan pesan Anda di bawah ini.</p>
+            <form id="contactForm" class="space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" placeholder="Nama Anda" required class="bg-gray-900/80 border border-gray-700 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-xs text-white outline-none transition">
+                    <input type="email" placeholder="Email Anda" required class="bg-gray-900/80 border border-gray-700 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-xs text-white outline-none transition">
+                </div>
+                <textarea rows="3" placeholder="Tuliskan ide atau penawaran Anda..." required class="w-full bg-gray-900/80 border border-gray-700 focus:border-indigo-500 rounded-xl p-4 text-xs text-white outline-none transition resize-none"></textarea>
+                <div class="flex justify-end">
+                    <button type="submit" class="btn-accent px-6 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center gap-2">
+                        <span>Kirim Pesan</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+            <div id="formStatus" class="hidden mt-3 p-3 rounded-xl text-xs text-center font-medium"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 pt-6 border-t border-gray-800/60 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 Alexandre R. All rights reserved.</p>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-gray-300 transition">Kebijakan Privasi</a>
+                <a href="#" class="hover:text-gray-300 transition">Syarat & Ketentuan</a>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Customization Modal Drawer -->
+    <div id="configModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end opacity-0 pointer-events-none transition-all duration-300">
+        <div class="w-full max-w-sm bg-gray-900 h-full p-6 overflow-y-auto border-l border-gray-800 shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300" id="configDrawer">
+            <div class="space-y-6">
+                <!-- Drawer Header -->
+                <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-palette text-indigo-400"></i> Pengaturan Tema
+                    </h3>
+                    <button id="closeConfigBtn" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Theme Background Type Selector -->
+                <div class="space-y-3">
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Mode Background Animated</label>
+                    <div class="grid grid-cols-1 gap-2">
+                        <button data-bg="particles" class="bg-button text-left px-4 py-3 rounded-xl bg-gray-800/80 border border-gray-700 text-sm font-medium text-white hover:bg-gray-700 flex items-center justify-between transition">
+                            <span><i class="fa-solid fa-sparkles text-amber-400 mr-2"></i> Partikel Stars / Dust</span>
+                            <i class="fa-solid fa-check text-indigo-400 opacity-0 check-icon"></i>
+                        </button>
+                        <button data-bg="mesh" class="bg-button text-left px-4 py-3 rounded-xl bg-gray-800/80 border border-gray-700 text-sm font-medium text-white hover:bg-gray-700 flex items-center justify-between transition">
+                            <span><i class="fa-solid fa-circle-nodes text-indigo-400 mr-2"></i> Mesh Constellation</span>
+                            <i class="fa-solid fa-check text-indigo-400 opacity-0 check-icon"></i>
+                        </button>
+                        <button data-bg="gradient" class="bg-button text-left px-4 py-3 rounded-xl bg-gray-800/80 border border-gray-700 text-sm font-medium text-white hover:bg-gray-700 flex items-center justify-between transition">
+                            <span><i class="fa-solid fa-fill-drip text-pink-400 mr-2"></i> Lava Gradient Liquid</span>
+                            <i class="fa-solid fa-check text-indigo-400 opacity-0 check-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Color Accent Selection -->
+                <div class="space-y-3">
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Warna Aksen Utama</label>
+                    <div class="flex items-center gap-3">
+                        <button class="color-dot w-9 h-9 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-offset-gray-900 ring-transparent focus:ring-indigo-500" data-color="#6366f1" data-hover="#4f46e5" title="Indigo"></button>
+                        <button class="color-dot w-9 h-9 rounded-full bg-purple-500 ring-2 ring-offset-2 ring-offset-gray-900 ring-transparent focus:ring-purple-500" data-color="#a855f7" data-hover="#9333ea" title="Purple"></button>
+                        <button class="color-dot w-9 h-9 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-gray-900 ring-transparent focus:ring-emerald-500" data-color="#10b981" data-hover="#059669" title="Emerald"></button>
+                        <button class="color-dot w-9 h-9 rounded-full bg-rose-500 ring-2 ring-offset-2 ring-offset-gray-900 ring-transparent focus:ring-rose-500" data-color="#f43f5e" data-hover="#e11d48" title="Rose"></button>
+                        <button class="color-dot w-9 h-9 rounded-full bg-amber-500 ring-2 ring-offset-2 ring-offset-gray-900 ring-transparent focus:ring-amber-500" data-color="#f59e0b" data-hover="#d97706" title="Amber"></button>
+                    </div>
+                </div>
+
+                <!-- Particle Speed / Density Controls -->
+                <div class="space-y-3 pt-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Kecepatan Animasi</label>
+                        <span id="speedValue" class="text-xs font-bold text-indigo-400">1x</span>
+                    </div>
+                    <input type="range" id="speedSlider" min="0.2" max="3" step="0.1" value="1" class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                </div>
+            </div>
+
+            <!-- Drawer Footer -->
+            <div class="pt-6 border-t border-gray-800">
+                <button id="resetBgBtn" class="w-full py-2.5 rounded-xl border border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800 text-xs font-semibold transition">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Reset Default
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Engine -->
+    <script>
+        // --- Canvas Dynamic Animated Background Engine ---
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        // Configuration State
+        let currentBgMode = 'particles'; // 'particles', 'mesh', 'gradient'
+        let animationSpeed = 1.0;
+        let primaryAccentColor = '#6366f1';
+        
+        // Mouse Coordinates
+        let mouse = {
+            x: width / 2,
+            y: height / 2,
+            radius: 150
+        };
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initElements();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        // Background Elements Arrays
+        let particles = [];
+        let blobs = [];
+
+        // Helper Color Parser
+        function hexToRgb(hex) {
+            let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 99, g: 102, b: 241 };
+        }
+
+        // Particle Object Class
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.alpha = Math.random() * 0.6 + 0.2;
+            }
+
+            update() {
+                this.x += this.vx * animationSpeed;
+                this.y += this.vy * animationSpeed;
+
+                // Screen Wrap
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
+
+                // Mouse Interaction (Push effect)
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouse.radius) {
+                    let force = (mouse.radius - distance) / mouse.radius;
+                    let directionX = dx / distance;
+                    let directionY = dy / distance;
+                    this.x -= directionX * force * 3;
+                    this.y -= directionY * force * 3;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                const rgb = hexToRgb(primaryAccentColor);
+                ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${this.alpha})`;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = primaryAccentColor;
+                ctx.fill();
+                ctx.shadowBlur = 0; // Reset
+            }
+        }
+
+        // Animated Blob for Liquid Gradient Mode
+        class Blob {
+            constructor(color) {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.radius = Math.random() * 200 + 150;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.color = color;
+            }
+
+            update() {
+                this.x += this.vx * animationSpeed;
+                this.y += this.vy * animationSpeed;
+
+                if (this.x - this.radius < 0 || this.x + this.radius > width) this.vx *= -1;
+                if (this.y - this.radius < 0 || this.y + this.radius > height) this.vy *= -1;
+            }
+
+            draw() {
+                let gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                gradient.addColorStop(0, this.color);
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                
+                ctx.beginPath();
+                ctx.fillStyle = gradient;
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Initialize Background Elements
+        function initElements() {
+            particles = [];
+            let count = Math.floor((width * height) / 9000);
+            for (let i = 0; i < Math.min(count, 120); i++) {
+                particles.push(new Particle());
+            }
+
+            blobs = [
+                new Blob('rgba(99, 102, 241, 0.25)'),
+                new Blob('rgba(236, 72, 153, 0.2)'),
+                new Blob('rgba(59, 130, 246, 0.25)')
+            ];
+        }
+
+        // Draw Constellation / Mesh Connections
+        function drawMesh() {
+            const rgb = hexToRgb(primaryAccentColor);
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 110) {
+                        let opacity = 1 - (dist / 110);
+                        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity * 0.35})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Main Animation Loop
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            if (currentBgMode === 'gradient') {
+                blobs.forEach(blob => {
+                    blob.update();
+                    blob.draw();
+                });
+            } else if (currentBgMode === 'particles') {
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+            } else if (currentBgMode === 'mesh') {
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                drawMesh();
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Run Animation Engine on Load
+        window.onload = function() {
+            initElements();
+            animate();
+            updateSelectedBgUI();
+        };
+
+        // --- Customization Drawer & Interactivity UI ---
+        const configToggleBtn = document.getElementById('configToggleBtn');
+        const closeConfigBtn = document.getElementById('closeConfigBtn');
+        const configModal = document.getElementById('configModal');
+        const configDrawer = document.getElementById('configDrawer');
+
+        function openDrawer() {
+            configModal.classList.remove('opacity-0', 'pointer-events-none');
+            configDrawer.classList.remove('translate-x-full');
+        }
+
+        function closeDrawer() {
+            configModal.classList.add('opacity-0', 'pointer-events-none');
+            configDrawer.classList.add('translate-x-full');
+        }
+
+        configToggleBtn.addEventListener('click', openDrawer);
+        closeConfigBtn.addEventListener('click', closeDrawer);
+        configModal.addEventListener('click', (e) => {
+            if (e.target === configModal) closeDrawer();
+        });
+
+        // Background Mode Buttons Trigger
+        const bgButtons = document.querySelectorAll('.bg-button');
+        bgButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentBgMode = btn.getAttribute('data-bg');
+                updateSelectedBgUI();
+            });
+        });
+
+        function updateSelectedBgUI() {
+            bgButtons.forEach(btn => {
+                const isSelected = btn.getAttribute('data-bg') === currentBgMode;
+                const checkIcon = btn.querySelector('.check-icon');
+                if (isSelected) {
+                    btn.classList.add('border-indigo-500', 'bg-indigo-500/10');
+                    checkIcon.classList.remove('opacity-0');
+                } else {
+                    btn.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+                    checkIcon.classList.add('opacity-0');
+                }
+            });
+        }
+
+        // Color Swatches Custom Accent Changer
+        const colorDots = document.querySelectorAll('.color-dot');
+        colorDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const color = dot.getAttribute('data-color');
+                const hoverColor = dot.getAttribute('data-hover');
+                
+                primaryAccentColor = color;
+                document.documentElement.style.setProperty('--accent-color', color);
+                document.documentElement.style.setProperty('--accent-hover-color', hoverColor);
+                document.documentElement.style.setProperty('--accent-glow', `${color}55`);
+
+                colorDots.forEach(d => d.classList.remove('ring-white'));
+                dot.classList.add('ring-white');
+            });
+        });
+
+        // Animation Speed Controller
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+
+        speedSlider.addEventListener('input', (e) => {
+            animationSpeed = parseFloat(e.target.value);
+            speedValue.textContent = `${animationSpeed}x`;
+        });
+
+        // Reset Settings
+        document.getElementById('resetBgBtn').addEventListener('click', () => {
+            currentBgMode = 'particles';
+            animationSpeed = 1.0;
+            speedSlider.value = 1.0;
+            speedValue.textContent = '1x';
+            primaryAccentColor = '#6366f1';
+            document.documentElement.style.setProperty('--accent-color', '#6366f1');
+            document.documentElement.style.setProperty('--accent-hover-color', '#4f46e5');
+            document.documentElement.style.setProperty('--accent-glow', 'rgba(99, 102, 241, 0.35)');
+            updateSelectedBgUI();
+        });
+
+        // Contact Form Submission Mock
+        const contactForm = document.getElementById('contactForm');
+        const formStatus = document.getElementById('formStatus');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            formStatus.classList.remove('hidden', 'bg-red-500/20', 'text-red-300');
+            formStatus.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border', 'border-emerald-500/30');
+            formStatus.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Pesan Anda telah terkirim! Terima kasih.';
+            contactForm.reset();
+
+            setTimeout(() => {
+                formStatus.classList.add('hidden');
+            }, 4000);
+        });
+    </script>
+</body>
+</html>
